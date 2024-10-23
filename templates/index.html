@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Translation App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Speech Translation App</h1>
+        <div class="options">
+            <h2>Select Translation Method</h2>
+            <button onclick="showLiveTranslation()">Live Speech to Text Translation</button>
+            <button onclick="showUploadTranslation()">Upload Audio File</button>
+            <button onclick="showTextTranslation()">Text to Text Translation</button>
+        </div>
+        
+        <div id="live-translation" class="translation-section" style="display:none;">
+            <h2>Live Speech Translation</h2>
+            <form id="liveForm">
+                <label for="src_lang">Source Language:</label>
+                <select name="src_lang" required>
+                    <option value="en">English</option>
+                    <option value="fr">French</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ta">Tamil</option>
+                    <option value="es">Spanish</option>
+                </select>
+                <label for="target_lang">Target Language:</label>
+                <select name="target_lang" required>
+                    <option value="en">English</option>
+                    <option value="fr">French</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ta">Tamil</option>
+                    <option value="es">Spanish</option>
+                </select>
+                <button type="submit">Start Translation</button>
+            </form>
+            <div id="liveResult"></div>
+        </div>
+
+        <div id="upload-translation" class="translation-section" style="display:none;">
+            <h2>Upload Audio Translation</h2>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <label for="audio_file">Select Audio File:</label>
+                <input type="file" name="audio_file" accept="audio/*" required>
+                <label for="src_lang">Source Language:</label>
+                <select name="src_lang" required>
+                    <option value="en">English</option>
+                    <option value="fr">French</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ta">Tamil</option>
+                    <option value="es">Spanish</option>
+                </select>
+                <label for="target_lang">Target Language:</label>
+                <select name="target_lang" required>
+                    <option value="en">English</option>
+                    <option value="fr">French</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ta">Tamil</option>
+                    <option value="es">Spanish</option>
+                </select>
+                <button type="submit">Upload and Translate</button>
+            </form>
+            <div id="uploadResult"></div>
+        </div>
+
+        <div id="text-translation" class="translation-section" style="display:none;">
+            <h2>Text Translation</h2>
+            <form id="textForm">
+                <label for="text">Enter Text:</label>
+                <textarea name="text" required></textarea>
+                <label for="src_lang">Source Language:</label>
+                <select name="src_lang" required>
+                    <option value="en">English</option>
+                    <option value="fr">French</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ta">Tamil</option>
+                    <option value="es">Spanish</option>
+                </select>
+                <label for="target_lang">Target Language:</label>
+                <select name="target_lang" required>
+                    <option value="en">English</option>
+                    <option value="fr">French</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ta">Tamil</option>
+                    <option value="es">Spanish</option>
+                </select>
+                <button type="submit">Translate Text</button>
+            </form>
+            <div id="textResult"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('liveForm').onsubmit = function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/live_translate', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json()).then(data => {
+                document.getElementById('liveResult').innerText = `Original: ${data.original}\nTranslation: ${data.translation}`;
+            });
+        };
+
+        document.getElementById('uploadForm').onsubmit = function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/upload_translate', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json()).then(data => {
+                document.getElementById('uploadResult').innerText = `Original: ${data.original}\nTranslation: ${data.translation}`;
+            });
+        };
+
+        document.getElementById('textForm').onsubmit = function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/text_translate', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json()).then(data => {
+                document.getElementById('textResult').innerText = `Translation: ${data.translation}`;
+            });
+        };
+
+        function showLiveTranslation() {
+            document.getElementById('live-translation').style.display = 'block';
+            document.getElementById('upload-translation').style.display = 'none';
+            document.getElementById('text-translation').style.display = 'none';
+        }
+
+        function showUploadTranslation() {
+            document.getElementById('live-translation').style.display = 'none';
+            document.getElementById('upload-translation').style.display = 'block';
+            document.getElementById('text-translation').style.display = 'none';
+        }
+
+        function showTextTranslation() {
+            document.getElementById('live-translation').style.display = 'none';
+            document.getElementById('upload-translation').style.display = 'none';
+            document.getElementById('text-translation').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
